@@ -1,4 +1,4 @@
-def LimitDataSet(df, dselect, libraries):
+def limit_data_set(df, dselect, libraries):
     """ Limits the data set to only necessary columns and only relevant dates
     Args:
         df: dateframe from previous function
@@ -24,7 +24,7 @@ def LimitDataSet(df, dselect, libraries):
     return df, ldate
 
 
-def CalcWindows(df, p, libraries):
+def calc_windows(df, p, libraries):
     """ Calculates window value columns to determine what periods a flight record could be grouped into.
     Example: '2016-01-04' would return window values '2015-11-01', '2015-12-01', '2016-01-01'.
     Args:
@@ -81,7 +81,7 @@ def CalcWindows(df, p, libraries):
     return windowed
 
 
-def CalcRollingAvg(df, last_date, p, libraries):
+def calc_rolling_avg(df, last_date, p, libraries):
     """ Calculates the rolling average by melting the window columns and grouping the result.
     Args:
      df: date frame from previous function
@@ -143,9 +143,9 @@ def fn(conn, libraries, params, predecessors):
     period = 3
     date_selection = 'Last_Record'
 
-    df, last_date = LimitDataSet(df, date_selection, libraries)
-    win = CalcWindows(df, period, libraries)
-    fin = CalcRollingAvg(win, last_date, period, libraries)
+    df, last_date = limit_data_set(df, date_selection, libraries)
+    win = calc_windows(df, period, libraries)
+    fin = calc_rolling_avg(win, last_date, period, libraries)
 
     return fin
 
