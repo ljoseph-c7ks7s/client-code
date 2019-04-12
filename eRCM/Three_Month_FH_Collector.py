@@ -7,7 +7,7 @@ Args:
     params: dictionary of additional parameters from component config (optional)
     predecessors: list of predecessor component names
 
-    Reads in compiled Sortie Data
+    Reads in compiled sortie Data
 
 Returns:
 	average flight hours for the next three months
@@ -17,12 +17,30 @@ def fn(conn, libraries, params, predecessors):
     np = libraries['numpy']
     dt = libraries['datetime']
 
-    last_date = str("20140101")
-
-    query = "SELECT Serial_Number, Mission_Number, Depart_Date, Land_Date, Flying_Hours FROM %s WHERE Depart_Date >=" + last_date % predecessors[0]
+    query = "SELECT * FROM %s" % predecessors[0]
     df = pd.read_sql_query(sql = query, con = conn)
 
-    def CalcWindows(df, period):
+    #set the period (will make this a parameter eventually)
+    period = 3
+    date_selection = 'Last_Record'
+
+    # limit the data frame to desired columns and the last three years
+    df = df[['Serial_Number', 'Depart_Date', 'Flying_Hours']]
+    
+    # calculate the last date (planning on adding support for this selection parameter down the road)
+    def GetLastDate(df, dselect):
+	    if dselect == 'Today':
+	    	ldate = dt.datetime.now().year - 5
+	    else:
+	    	ldate = df['Depart_Date'].dt.year.max() - 5
+
+	    return ldate
+    
+    last_date = GetLastDate(df, date_selection)
+
+    df = df[df['Depart_Date'].dt.year >= last_date]
+
+    def CalcWindows(df, p):
         """ Calculates window value columns to determine what periods a flight record could be grouped into.
         Example: '2016-01-04' would return window values '2015-11-01', '2015-12-01', '2016-01-01'.
         Args:
@@ -32,10 +50,10 @@ def fn(conn, libraries, params, predecessors):
             windowed: dataframe with window values where record is active
         """
         # create useful window columns by iterating for 1 through number of periods specified
-        for i in range(1, period + 1):
+        for i in range(1, p + 1):
             #create column name and set window value (either 2, 1, or 0 when period = 3)
             column = 'W' + str(i)
-            window = period - i
+            window = p - i
 
             # extract baseline month values
             df['Month'] = df['Depart_Date'].dt.month
@@ -65,6 +83,7 @@ def fn(conn, libraries, params, predecessors):
 
             # create the value for each window as a string
             df[column] = df['Year'] + '-' + df['Month'] + '-01'
+            
             # convert each window back to original datetime64 format
             df[column] = df[column].map(lambda x: np.datetime64(x))
 
@@ -75,10 +94,11 @@ def fn(conn, libraries, params, predecessors):
         return windowed
 
 
-    def CalcRollingAvg(df, period):
+    def CalcRollingAvg(df, ld, p):
         """ Calculates the rolling average by melting the window columns and grouping the result.
         Args:
          df: dateframe from previous function
+         last_date: year associated with five years ago
          period: currently only works where period = 3. Long-term, will try and make dynamic based on this value
         Returns:
         grouped: dataframe with the moving average of flying_hours
@@ -87,7 +107,7 @@ def fn(conn, libraries, params, predecessors):
         columns = list(df.columns.values)
 
         # calculate the point at which the melted dataframe with pivot
-        melt_axis = len(columns) - period
+        melt_axis = len(columns) - p
 
         # create a melted dataframe to used for group by calculation
         melted = pd.melt(df,
@@ -99,28 +119,33 @@ def fn(conn, libraries, params, predecessors):
 
         # group by window value and calculate the mean
         grouped = melted.groupby(['Window_Val'], as_index=False).mean()
+
         # rename columns
         grouped.rename(columns = {'Window_Val': 'Three_Month_Start_Date', 'Flying_Hours': 'Average_Flying_Hours'}, inplace = True)
+
+        # eliminate windows that predate the start year
+        grouped = grouped[grouped['Three_Month_Start_Date'].dt.year >= last_date]
 
         # return results
         return grouped
 
 
-    def head(df, period=3):
+    def head(df, ld, p=3):
         """ Calls the CalcWindows and CalcRollingAvg functions
         Args:
             df: dateframe from previous function
+            last_date: year associated with five years ago
             period: currently only works where period = 3. Long-term, will try and make dynamic based on this value
         Returns:
             final: final dataframe
         """
-        windows = CalcWindows(df, period)
-        final = CalcRollingAvg(windows, period)
+        windows = CalcWindows(df, p)
+        final = CalcRollingAvg(windows, ld, p)
 
         return final
 
 
     # create the final dataframe
-    final = head(df, period = 3)
+    final = head(df, last_date, period)
 
     return final
