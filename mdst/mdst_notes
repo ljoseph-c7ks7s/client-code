@@ -1,0 +1,136 @@
+*** append_rule_number ***
+
+	1) if does not exist or null value, use new string
+	2) else, append the new value to the existing value
+
+*** apply_rule ***
+
+	SETUP
+	1) copy the initial dataset
+	2) upper case the rule
+	3) check to see if the rule is deleted
+	4) try catch to create rule name and rule number
+	5) generate change_to_str and new_wuc values
+		a) perform a search on the rule to extract the 'change_to_str', ignoring case (NOTE: this is compplicated)
+		b) perform a search on the rule to extract the new_wuc by searching from the last index of the 'change_to_str' to the end
+	6) create wuc_narr by referencing the WUC value to extract the narrative value
+		a) if does not exist, leave blank
+	7) remove all change to logic from the original string for later iteration
+	8) setup index objects on original df
+		a) start with the original index; this is important as we will update() based on index later
+		b) also create a pending index object by copying the original index object
+	9. split the rules using the field names object
+
+	ITERATE BY RULE
+	10) iterate by category in field names
+		a) set cat field to be the category
+		b) set rule_element to be the third value (1 + ii)
+		c) create regex for seaching match_type
+		d) apply the regex to rule_elements to split the match types
+			i) remove empty items
+		e) iterate by match type in rule
+			i) set 'joined_by_and' to true
+			ii) remove trailing 'and the'
+			iii) remove trailing 'or' and setu 'joined by and' flag to false (for later use)
+			iv) count the number of 'OR' cat_remaining
+			v) group the ands into a list and remov the empties
+
+			FOR THE ORs
+			vi) if there are ORs:
+				A) pop off the last item from the AND list
+				B) split the remainder from above off into its own lis
+				C) remove all quotes and parentheses
+				D) join everything with an or operator
+				E) replace all '.' with '/.'
+				F) If 'contains' in match_type:
+					I) AND: intersection of intersection of pattern
+					II) OR: union of intersection of pattern
+				H) ELIF 'not contain':
+					I) AND: intersection of intersection of not pattern
+					II) OR: union of intersetion of not pattern
+				H) ELIF '=' or 'equals'
+					I) AND: intersection of intersection of pattern and len(pattern)
+					II) OR: union of intersection  of pattern and len(pattern)
+				I) ELIF 'begins with'
+					I) AND: intersection of intersection of pattern and beginning of pattern
+					II) OR: union of intersection of pattern and beginning of pattern
+				J) ELSE:
+					I) AND: intersection of intersection of pattern and end of pattern
+					II) OR: union of intersection of pattern and end of pattern
+			
+			FOR THE ANDs
+			vii) for the ands:
+				A) If 'contains' in match_type:
+					I) AND: intersection of union of intersection of pattern
+					II) OR: union of union of intersection of pattern
+				B) ELIF 'not contain':
+					I) AND: intersection of union of intersection of not pattern
+					II) OR: union of union of intersection of not pattern
+				C) ELIF '=' or 'equals'
+					I) AND: intersection of union of intersection of pattern and len(pattern)
+					II) OR: union of union of intersection of pattern and len(pattern)
+				D) ELIF 'begins with'
+					I) AND: intersection of union of intersection of pattern and beginning of pattern
+					II) OR: union of union of intersection of pattern and beginning of pattern
+				E) ELSE: 
+					I) AND: intersection of union of pattern and end of pattern
+					II) OR: union of union of pattern and end of pattern
+		f) reset original indices to be pending indices
+
+	GENERATE RESULTS
+	11) filter down the dataframe to only those with relevant indices
+	12) update the original wuc in the data frame to reflect the matched wuc
+	13) change wuc_rule by using the append_rule_number function
+	14) print which rule changed how many records to what wuc/narrative combo
+	15) return the dataframe
+
+*** fn ***
+
+	SETUP
+	1) get level parameter
+	2) make sure level parametert is 3, 4, 5, or all
+		a) if all, make lowercase
+	3) import libraries
+	4) create field names and field lookup variables for later use
+
+	DATA LOAD
+	5) load the wuc data
+	6) load the rules list data and turn it into a list for later iteration
+		a) if level != all, then additional subset on level
+	7) load the REMIS data
+		a) if only one predecessor component, 
+			i) look up the column names
+			ii) select against the data
+		b) if multiple predecessor components,
+			i) look up the column names
+			ii) OPTION 1: if it has 'Work_Unit_Code' as a column &...
+				A) 'Discrepency Narrative' in the column names, select against the data
+				B) NOT 'Discrepency Narrative' in the column names, select against the data as FILTER
+			iii) OPTION 2: if it does NOT have 'Work_Unit_Code' as a column &...
+				A) 'Discrepency Narrative' in the column names, select against the data
+				B) NOT 'Discrepency Narrative' in the column names, select against the data as FILTER
+			iv) if WUC is in the filter data set, use its WUC column instead of original with a merge, else fill with NA
+
+	DATA REVIEW
+	8) index data, initialize a wuc counts data frame, sort, and take the top 10
+		a) plot the top 10
+	9) create compile and special dict classes for use in classifying/visualizing WUC rules (this is basically metadata about the count )
+		a) wuc_group grain w/ re, metrics, and indices
+		b) each_rule grain w/ re, and indices
+
+	APPLY THE RULE FUNCTION
+	10) for loop over the rules list, applying the rule function every time
+		i) count the rows modified
+		ii) update the base df with the new subset of code on the index
+		iii) calculate the metrics and indices aggregates (NOTE: this is an opportunity for potential improvement)
+
+	COUNT OF EACH RULE
+	11) duplicate the each_rule_index dict
+	12) iterate over each key value, taking the length of each rule index vector (this is the count of how many occur)
+	13) return the df based on return fields
+
+
+
+
+
+	

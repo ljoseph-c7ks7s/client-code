@@ -1,0 +1,10 @@
+x_value,domain_check
+99,Pass
+95,Pass
+82,Pass
+75,Pass
+50,Fail
+25,Fail
+10,Fail
+5,Fail
+1,Fail

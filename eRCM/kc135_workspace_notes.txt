@@ -1,0 +1,37 @@
+FLAT FILES
+- REMIS Data: P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\KC-135 Data\KC135T REMIS & P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\KC-135 Data\KC135R REMIS
+- Sortie Import New: P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\KC-135 Data\Sortie Data
+- Sortie Import Old: P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\KC-135 Data\Sortie Data
+- Assigned Location: P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\KC-135 Data
+- KC135 eRCM WUC List: .\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\data
+- HMAL Codes: P:\External Projects\3136 - C130\Software - Models - Analyses - Data\Data\phase_one
+- AT Codes: P:\External Projects\3136 - C130\Software - Models - Analyses - Data\Data\phase_one
+- TM Codes: P:\External Projects\3136 - C130\Software - Models - Analyses - Data\Data\phase_one
+- WD Codes: P:\External Projects\3136 - C130\Software - Models - Analyses - Data\Data\phase_one
+- Labels Import: P:\External Projects\3134 - eRCM\Software - Models - Analyses - Data\training data\kc135_hyd_pump\previous
+
+
+SCRIPTS
+- Clean WUC Remove FOM: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Clean_WUC_Remove_FOM_EiE.py
+- Identify R2 Drop ATC: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm\scripts\6_Identify_R2.py
+- Identify CANN: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm\scripts\Identify_CANN.py
+- OpsTempo: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\prophet_OpTempo.py
+- Three Month FH Collector: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Three_Month_FH_Visual.py
+- Part Position Parser: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm\scripts\7_part_position_parser.py
+- Add Event Age: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm\scripts\9_Sortie_Remis_Match_Add_Age.py
+- Split R and Multi POS: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm\scripts\8_Split_R_and_Multi_POS.py
+- Three Month FH Visual: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Three_Month_FH_Collector.py
+- Condense Labels: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Condense_Labels.py
+- Action Metrics: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\model_performance.py
+- Oversample Minorities Action 3: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_ml_comparison\scripts\oversample_minority_classes.py
+- RC Metrics: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\model_performance.py
+- Action Condense Metrics: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\model_performance.py
+- Remove UNK Position Number: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Remove_UNK_Position_Number.py
+- Current Part Age: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Current_Part_Ages.py
+- Predictive Twins: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Predictive_Twins.py
+- Interval Plots: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\kc135_interval_plots.py
+- Weibull Plots: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Plot_Weibull.py
+- Range Check: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Range_Check.py
+- Domain Check: .\clockwork-etl\docker-compose\data\clockwork_etl\clockworkETL_workspace\ercm_kc135\scripts\Domain_Check.py
+
+NOTES
