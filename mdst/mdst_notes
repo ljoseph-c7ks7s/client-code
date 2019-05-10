@@ -33,7 +33,7 @@
 			ii) remove trailing 'and the'
 			iii) remove trailing 'or' and setu 'joined by and' flag to false (for later use)
 			iv) count the number of 'OR' cat_remaining
-			v) group the ands into a list and remov the empties
+			v) group the ands into a list and remove the empties
 
 			FOR THE ORs
 			vi) if there are ORs:
